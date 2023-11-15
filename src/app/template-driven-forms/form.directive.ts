@@ -33,6 +33,21 @@ export class FormDirective<T> {
         this.updateValueAndValidityRecursive(this.ngForm.form);
       });
   };
+  
+  @Input() public set validationConfig(v: { [key: string]: string[] }) {
+    Object.keys(v).forEach((key) => {
+      this.formValueChange
+        .pipe(
+          debounceTime(0),
+          map(res => res[key])
+        )
+        .subscribe((form) => {
+          v[key].forEach((path) => {
+            this.ngForm.form.get(path)?.updateValueAndValidity({ onlySelf: true, emitEvent: false });
+          })
+        })
+    })
+  }
 
   constructor() {
     this.ngForm.ngSubmit.subscribe(() => {
