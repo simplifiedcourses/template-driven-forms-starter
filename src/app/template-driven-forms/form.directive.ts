@@ -14,15 +14,18 @@ export class FormDirective<T> {
   @Input() public suite: Suite<string, string, (model: T, field: string) => void> | null = null;
 
   @Output() public readonly formValueChange = this.ngForm.form.valueChanges.pipe(
-    debounceTime(0)
+    debounceTime(0),
+    map(() => this.ngForm.form.getRawValue())
   );
 
-  @Output() public readonly dirtyChange = this.formValueChange.pipe(
-    map(() => this.ngForm.dirty)
+  @Output() public readonly dirtyChange = this.ngForm.form.valueChanges.pipe(
+    map(() => this.ngForm.dirty),
+    distinctUntilChanged()
   );
 
-  @Output() public readonly validChange = this.formValueChange.pipe(
+  @Output() public readonly validChange =  this.ngForm.form.valueChanges.pipe(
     map(() => this.ngForm.valid),
+    distinctUntilChanged()
   );
 
   @Input()
